@@ -1,15 +1,10 @@
 #!/bin/bash
 
-source .env
-
-# Сохраняем текущую директорию в переменную
-CURRENT_DIR=$(pwd)
-
-# Сохраняем текущего пользователя в переменную
-CURRENT_USER=$(whoami)
+sudo apt update
+sudo apt install -y udiskie
 
 # Путь к файлу
-SERVICE_PATH="/etc/systemd/system/logs_archiver_$SERVICE_POSTFIX.service"
+SERVICE_PATH="/etc/systemd/system/udiskie.service"
 
 # Проверяем, существует ли файл
 if [ -f "$SERVICE_PATH" ]; then
@@ -19,16 +14,14 @@ else
 
     # Содержимое для файла
     SERVICE_CONTENT="[Unit]
-Description=Token Update Service
-After=network.target
+Description=Automount removable media
+After=udisks2.service
+Requires=udisks2.service
 
 [Service]
-ExecStart=/bin/bash /usr/local/lib/logs_archiver_$SERVICE_POSTFIX/launcher.sh
-StandardOutput=file:/usr/local/lib/logs_archiver_$SERVICE_POSTFIX/logfile.log
-StandardError=file:/usr/local/lib/logs_archiver_$SERVICE_POSTFIX/logfile.log
-Group=$CURRENT_USER
-User=$CURRENT_USER
-Restart=on-failure
+Type=simple
+ExecStart=/usr/bin/udiskie --no-notify --automount
+Restart=always
 
 [Install]
 WantedBy=multi-user.target"
@@ -40,29 +33,8 @@ WantedBy=multi-user.target"
     sudo chmod 644 "$SERVICE_PATH"
     echo "Файл $SERVICE_PATH успешно создан."
 
-    # Создаём лог-файл
-    sudo touch $CURRENT_DIR/logfile.log
-    sudo chown $CURRENT_USER:$CURRENT_USER $CURRENT_DIR/logfile.log
-
-    # Доставляем все скрипты
-SCRIPTS_PATH=/usr/local/lib/logs_archiver_$SERVICE_POSTFIX
-    sudo mkdir $SCRIPTS_PATH
-    sudo cp -rf ./scripts/* $SCRIPTS_PATH
-    sudo cp .env $SCRIPTS_PATH
-
-    # Создаём файл для запуска
-sudo tee "$SCRIPTS_PATH/launcher.sh" > /dev/null << EOF
-#!/bin/bash
-/usr/local/lib/logs_archiver_$SERVICE_POSTFIX/01_get_global_list.sh $FOLDER_PATH \
-| /usr/local/lib/logs_archiver_$SERVICE_POSTFIX/02_send_dirs_to_remover.sh
-EOF
-
-   sudo chmod +x /usr/local/lib/logs_archiver_$SERVICE_POSTFIX/*.sh
-
     # Перезапускаем systemd для применения изменений
+    sudo systemctl daemon-reexec
     sudo systemctl daemon-reload
-    sudo systemctl enable logs_archiver_$SERVICE_POSTFIX.service
-    sudo systemctl start logs_archiver_$SERVICE_POSTFIX.service
-    sudo systemctl status logs_archiver_$SERVICE_POSTFIX.service
-    echo "Systemd перезагружен."
+    sudo systemctl enable --now udiskie
 fi

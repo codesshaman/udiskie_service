@@ -19,19 +19,6 @@ ifneq (,$(wildcard .env))
 endif
 USER_ID = $(shell id -u)
 
-all:
-	@printf "Launch configuration ${name}...\n"
-	@./scripts/01_get_global_list.sh ${FOLDER_PATH} | ./scripts/02_send_dirs_to_remover.sh
-
-env:
-	@printf "$(ERROR_COLOR)==== Create environment file for ${name}... ====$(NO_COLOR)\n"
-	@if [ -f .env ]; then \
-		echo "$(ERROR_COLOR).env file already exists!$(NO_COLOR)"; \
-	else \
-		cp .env.example .env; \
-		echo "$(GREEN).env file successfully created!$(NO_COLOR)"; \
-	fi
-
 git:
 	@printf "$(YELLOW)==== Set user name and email to git for ${name} repo... ====$(NO_COLOR)\n"
 	@bash scripts/gituser.sh
@@ -41,6 +28,3 @@ push:
 
 service:
 	@bash scripts/create_service.sh
-
-timer:
-	@bash scripts/create_timer.sh
