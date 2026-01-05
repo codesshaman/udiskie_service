@@ -1,0 +1,4 @@
+#!/bin/bash
+
+/usr/local/lib/logs_archiver_prod/01_get_global_list.sh /home/yarogor/Docker/logs_archiver/test_dir | /usr/local/lib/logs_archiver_prod/02_send_dirs_to_remover.sh
+
