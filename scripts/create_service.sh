@@ -23,7 +23,7 @@ Requires=udisks2.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/udiskie --no-notify --automount
+ExecStart=/usr/bin/udiskie -s &
 Restart=always
 Group=$CURRENT_GROUP
 User=$CURRENT_USER
