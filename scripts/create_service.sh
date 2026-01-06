@@ -1,13 +1,18 @@
 #!/bin/bash
 
+# Установка udiskie, если он не установлен
 sudo apt update
 sudo apt install -y udiskie
 
+# Получаем текущего пользователя и группу
 CURRENT_USER=$(whoami)
 CURRENT_GROUP=$(id -gn "$CURRENT_USER")
 
-# Путь к файлу
-SERVICE_PATH="/etc/systemd/system/udiskie.service"
+# Создаём директорию для пользовательских сервисов systemd, если её нет
+mkdir -p ~/.config/systemd/user
+
+# Путь к файлу сервиса
+SERVICE_PATH="~/.config/systemd/user/udiskie.service"
 
 # Проверяем, существует ли файл
 if [ -f "$SERVICE_PATH" ]; then
@@ -17,30 +22,29 @@ else
 
     # Содержимое для файла
     SERVICE_CONTENT="[Unit]
-Description=Automount removable media
-After=udisks2.service
-Requires=udisks2.service
+Description=udiskie automount daemon
+After=graphical.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/udiskie -s &
+ExecStart=/usr/bin/udiskie -s
 Restart=always
-Group=$CURRENT_GROUP
-User=$CURRENT_USER
+Environment=DISPLAY=:0
 
 [Install]
-WantedBy=multi-user.target"
+WantedBy=default.target"
 
     # Создаём файл под sudo и записываем содержимое
-    echo "$SERVICE_CONTENT" | sudo tee "$SERVICE_PATH" > /dev/null
+    echo "$SERVICE_CONTENT" | tee "$SERVICE_PATH" > /dev/null
     
     # Устанавливаем корректные права доступа
-    sudo chmod 644 "$SERVICE_PATH"
+    chmod 644 "$SERVICE_PATH"
     echo "Файл $SERVICE_PATH успешно создан."
 
     # Перезапускаем systemd для применения изменений
-    sudo systemctl daemon-reexec
-    sudo systemctl daemon-reload
-    sudo systemctl enable --now udiskie
-    sudo systemctl status udiskie
+    systemctl --user daemon-reexec
+    systemctl --user daemon-reload
+    systemctl --user enable udiskie.service
+    systemctl --user start udiskie.service
+    systemctl --user status udiskie
 fi
