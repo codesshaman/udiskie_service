@@ -3,6 +3,9 @@
 sudo apt update
 sudo apt install -y udiskie
 
+CURRENT_USER=$(whoami)
+CURRENT_GROUP=$(id -gn "$CURRENT_USER")
+
 # Путь к файлу
 SERVICE_PATH="/etc/systemd/system/udiskie.service"
 
@@ -22,6 +25,8 @@ Requires=udisks2.service
 Type=simple
 ExecStart=/usr/bin/udiskie --no-notify --automount
 Restart=always
+Group=$CURRENT_GROUP
+User=$SCRIPT_USER
 
 [Install]
 WantedBy=multi-user.target"
