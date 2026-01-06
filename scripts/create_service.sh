@@ -9,10 +9,10 @@ CURRENT_USER=$(whoami)
 CURRENT_GROUP=$(id -gn "$CURRENT_USER")
 
 # Создаём директорию для пользовательских сервисов systemd, если её нет
-mkdir -p ~/.config/systemd/user
+mkdir -p ~/.config/systemd/$CURRENT_USER
 
 # Путь к файлу сервиса
-SERVICE_PATH="~/.config/systemd/user/udiskie.service"
+SERVICE_PATH="~/.config/systemd/$CURRENT_USER/udiskie.service"
 
 # Проверяем, существует ли файл
 if [ -f "$SERVICE_PATH" ]; then
