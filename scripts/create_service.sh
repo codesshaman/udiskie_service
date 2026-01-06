@@ -7,6 +7,9 @@ sudo apt install -y udiskie
 # Путь (стандартный для user services)
 mkdir -p ~/.config/systemd/user
 
+CURRENT_USER=$(whoami)
+CURRENT_GROUP=$(id -gn "$CURRENT_USER")
+
 SERVICE_PATH="$HOME/.config/systemd/user/udiskie.service"
 
 if [ -f "$SERVICE_PATH" ]; then
@@ -36,5 +39,5 @@ systemctl --user daemon-reload
 systemctl --user enable udiskie.service
 systemctl --user restart udiskie.service
 systemctl --user status udiskie.service
-sudo loginctl enable-linger rock
+sudo loginctl enable-linger $CURRENT_USER
 echo "Сервис udiskie настроен и запущен."
