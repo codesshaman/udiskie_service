@@ -42,4 +42,5 @@ WantedBy=multi-user.target"
     sudo systemctl daemon-reexec
     sudo systemctl daemon-reload
     sudo systemctl enable --now udiskie
+    sudo systemctl status udiskie
 fi
