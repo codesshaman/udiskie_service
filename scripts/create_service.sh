@@ -26,7 +26,7 @@ Type=simple
 ExecStart=/usr/bin/udiskie --no-notify --automount
 Restart=always
 Group=$CURRENT_GROUP
-User=$SCRIPT_USER
+User=$CURRENT_USER
 
 [Install]
 WantedBy=multi-user.target"
