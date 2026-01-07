@@ -1,0 +1,9 @@
+# sudo nano /etc/polkit-1/rules.d/10-udiskie.rules
+
+polkit.addRule(function(action, subject) {
+    if (action.id.indexOf("org.freedesktop.udisks2.") === 0 && subject.user === "rock") {
+        return polkit.Result.YES;
+    }
+});
+
+# sudo systemctl restart polkit
