@@ -11,6 +11,7 @@ CURRENT_USER=$(whoami)
 CURRENT_GROUP=$(id -gn "$CURRENT_USER")
 
 SERVICE_PATH="$HOME/.config/systemd/user/udiskie.service"
+RULE_PATH="/etc/polkit-1/rules.d/10-udiskie.rules"
 
 if [ -f "$SERVICE_PATH" ]; then
     echo "Сервис $SERVICE_PATH уже существует."
@@ -29,6 +30,14 @@ Restart=always
 [Install]
 WantedBy=default.target
 EOF
+
+RULE_CONTENT="polkit.addRule(function(action, subject) {
+    if (action.id.indexOf("org.freedesktop.udisks2.") === 0 && subject.user === "$CURRENT_USER") {
+        return polkit.Result.YES;
+    }
+});"
+
+    echo "$RULE_CONTENT" | sudo tee "$RULE_PATH" > /dev/null
 
     chmod 644 "$SERVICE_PATH"
     echo "Файл создан успешно."
