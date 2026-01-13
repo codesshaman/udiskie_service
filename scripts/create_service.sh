@@ -3,11 +3,12 @@
 # Путь (стандартный для user services)
 mkdir -p ~/.config/systemd/user
 
+CURRENT_PATH=$(pwd)
 CURRENT_USER=$(whoami)
 CURRENT_USER_ID=$(id -u "$CURRENT_USER")
 CURRENT_GROUP=$(id -gn "$CURRENT_USER")
-RULE_FILE="./99-usb-automount.rules"
-SCRIPT_FILE="./scripts/usb-automount.sh"
+RULE_FILE="$CURRENT_PATH/99-usb-automount.rules"
+SCRIPT_FILE="$CURRENT_PATH/scripts/usb-automount.sh"
 SERVICE_PATH="$HOME/.config/systemd/user/media-%i.mount"
 SCRIPT_PATH="/usr/local/bin/usb-automount.sh"
 RULE_PATH="/etc/udev/rules.d/99-usb-automount.rules"
