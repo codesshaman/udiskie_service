@@ -10,7 +10,7 @@ RULE_FILE="./99-usb-automount.rules"
 SCRIPT_FILE="./scripts/usb-automount.sh"
 SERVICE_PATH="$HOME/.config/systemd/user/media-%i.mount"
 SCRIPT_PATH="/usr/local/bin/usb-automount.sh"
-RULE_PATH="/etc/polkit-1/rules.d/99-usb-automount.rules"
+RULE_PATH="/etc/udev/rules.d/99-usb-automount.rules"
 
 if [ -f "$SERVICE_PATH" ]; then
     echo "Сервис $SERVICE_PATH уже существует."
