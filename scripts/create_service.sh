@@ -30,15 +30,25 @@ Options=defaults,noexec,nodev,nosuid,uid=$CURRENT_USER_ID,gid=$CURRENT_USER_ID,u
 [Install]
 WantedBy=multi-user.target
 EOF
+chmod 644 "$SERVICE_PATH"
+echo "Файл создан успешно."
+fi
 
+if [ -f "$SCRIPT_PATH" ]; then
+    echo "Скрипт $SCRIPT_PATH уже существует."
+else
     sudo cp "$SCRIPT_FILE" "$SCRIPT_PATH"
     sudo chmod +x "$SCRIPT_PATH"
-
-    sudo cp "$RULE_FILE" "$RULE_PATH"
-
-    chmod 644 "$SERVICE_PATH"
-    echo "Файл создан успешно."
 fi
+
+if [ -f "$RULE_PATH" ]; then
+    echo "Udev правило $RULE_PATH уже существует."
+else
+    echo "Создаём $RULE_PATH..."
+    sudo cp "$RULE_FILE" "$RULE_PATH"
+fi
+
+    
 
 # Перезагружаем user-daemon и управляем сервисом
 systemctl --user daemon-reload
