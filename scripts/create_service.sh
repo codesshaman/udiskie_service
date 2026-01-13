@@ -61,8 +61,5 @@ fi
 
 # Перезагружаем user-daemon и управляем сервисом
 systemctl --user daemon-reload
-systemctl --user enable udiskie.service
-systemctl --user restart udiskie.service
-systemctl --user status udiskie.service
 sudo loginctl enable-linger $CURRENT_USER
 echo "Сервис udiskie настроен и запущен."
