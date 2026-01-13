@@ -1,2 +1,10 @@
-ACTION=="add", SUBSYSTEM=="block", KERNEL=="sd*[0-9]*", ENV{DEVTYPE}=="partition", ENV{ID_FS_USAGE}=="filesystem", RUN+="/usr/local/bin/usb-automount.sh add %k"
-ACTION=="remove", SUBSYSTEM=="block", KERNEL=="sd*[0-9]*", ENV{DEVTYPE}=="partition", RUN+="/usr/local/bin/usb-automount.sh remove %k"
+ACTION=="add", SUBSYSTEM=="block", \
+KERNEL=="sd*[0-9]*", \
+ENV{DEVTYPE}=="partition", \
+ENV{ID_FS_USAGE}=="filesystem", \
+RUN+="/usr/bin/systemd-mount --no-block --automount=yes --collect \
+    --options=uid=1000,gid=1000,umask=002,noexec,nodev,nosuid,noatime \
+    /dev/%k /media/usb-%k"
+
+ACTION=="remove", SUBSYSTEM=="block", KERNEL=="sd*[1-9]*", \
+    RUN+="/bin/umount -l /media/usb-%k ; rmdir --ignore-fail-on-non-empty /media/usb-%k"
