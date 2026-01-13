@@ -1,16 +1,17 @@
 #!/bin/bash
 
+# Установка udiskie
+sudo apt update
+sudo apt install -y udiskie
+
 # Путь (стандартный для user services)
 mkdir -p ~/.config/systemd/user
 
 CURRENT_USER=$(whoami)
-CURRENT_USER_ID=$(id -u "$CURRENT_USER")
 CURRENT_GROUP=$(id -gn "$CURRENT_USER")
-RULE_FILE="./99-usb-automount.rules"
-SCRIPT_FILE="./scripts/usb-automount.sh"
-SERVICE_PATH="$HOME/.config/systemd/user/media-%i.mount"
-SCRIPT_PATH="/usr/local/bin/usb-automount.sh"
-RULE_PATH="/etc/polkit-1/rules.d/99-usb-automount.rules"
+
+SERVICE_PATH="$HOME/.config/systemd/user/udiskie.service"
+RULE_PATH="/etc/polkit-1/rules.d/10-udiskie.rules"
 
 if [ -f "$SERVICE_PATH" ]; then
     echo "Сервис $SERVICE_PATH уже существует."
@@ -19,21 +20,24 @@ else
 
     cat <<EOF > "$SERVICE_PATH"
 [Unit]
-Description=Automount USB device %i
-After=local-fs.target
+Description=udiskie automount daemon
 
-[Mount]
-Where=/media/%i
-Options=defaults,noexec,nodev,nosuid,uid=$CURRENT_USER_ID,gid=$CURRENT_USER_ID,umask=002,noatime
+[Service]
+Type=simple
+ExecStart=/usr/bin/udiskie -s
+Restart=always
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
 EOF
 
-    sudo cp "$SCRIPT_FILE" "$SCRIPT_PATH"
-    sudo chmod +x "$SCRIPT_PATH"
+RULE_CONTENT="polkit.addRule(function(action, subject) {
+    if (action.id.indexOf("org.freedesktop.udisks2.") === 0 && subject.user === "$CURRENT_USER") {
+        return polkit.Result.YES;
+    }
+});"
 
-    sudo cp "$RULE_FILE" "$RULE_PATH"
+    echo "$RULE_CONTENT" | sudo tee "$RULE_PATH" > /dev/null
 
     chmod 644 "$SERVICE_PATH"
     echo "Файл создан успешно."

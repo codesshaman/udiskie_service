@@ -1,0 +1,2 @@
+ACTION=="add", SUBSYSTEM=="block", KERNEL=="sd*[0-9]*", ENV{DEVTYPE}=="partition", ENV{ID_FS_USAGE}=="filesystem", RUN+="/usr/local/bin/usb-automount.sh add %k"
+ACTION=="remove", SUBSYSTEM=="block", KERNEL=="sd*[0-9]*", ENV{DEVTYPE}=="partition", RUN+="/usr/local/bin/usb-automount.sh remove %k"
