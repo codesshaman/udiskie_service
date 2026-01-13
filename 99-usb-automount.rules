@@ -7,4 +7,4 @@ RUN+="/usr/bin/systemd-mount --no-block --automount=yes --collect \
     /dev/%k /media/usb-%k"
 
 ACTION=="remove", SUBSYSTEM=="block", KERNEL=="sd*[1-9]*", \
-    RUN+="/bin/umount -l /media/usb-%k ; rmdir --ignore-fail-on-non-empty /media/usb-%k"
+    RUN+="/usr/local/bin/cleanup-usb-mount.sh %k"

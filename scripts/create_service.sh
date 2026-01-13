@@ -9,8 +9,10 @@ CURRENT_USER_ID=$(id -u "$CURRENT_USER")
 CURRENT_GROUP=$(id -gn "$CURRENT_USER")
 RULE_FILE="$CURRENT_PATH/99-usb-automount.rules"
 SCRIPT_FILE="$CURRENT_PATH/scripts/usb-automount.sh"
+UMOUNT_FILE="$CURRENT_PATH/scripts/cleanup-usb-mount.sh"
 SERVICE_PATH="$HOME/.config/systemd/user/media-%i.mount"
 SCRIPT_PATH="/usr/local/bin/usb-automount.sh"
+UMOUNT_PATH="/usr/local/bin/cleanup-usb-mount.sh"
 RULE_PATH="/etc/udev/rules.d/99-usb-automount.rules"
 
 if [ -f "$SERVICE_PATH" ]; then
@@ -39,6 +41,13 @@ if [ -f "$SCRIPT_PATH" ]; then
 else
     sudo cp "$SCRIPT_FILE" "$SCRIPT_PATH"
     sudo chmod +x "$SCRIPT_PATH"
+fi
+
+if [ -f "$UMOUNT_PATH" ]; then
+    echo "Скрипт $UMOUNT_PATH уже существует."
+else
+    sudo cp "$UMOUNT_FILE" "$UMOUNT_PATH"
+    sudo chmod +x "$UMOUNT_PATH"
 fi
 
 if [ -f "$RULE_PATH" ]; then
